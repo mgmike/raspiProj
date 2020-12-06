@@ -1,10 +1,11 @@
-#!/usr/bin/python3
+8#!/usr/bin/python3
 import RPi.GPIO as GPIO
 import time
 import socket
 import struct
 
 HOST = '192.168.50.220'
+HOST = '192.168.50.143'
 #HOST = '127.0.0.1'
 PORT = 65432
 PIN_TRIGGER = 7
