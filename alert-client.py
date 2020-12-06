@@ -13,9 +13,11 @@ PIN_ECHO = 11
 
 try:
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        while error is OSError:
-                error = s.connect((HOST, PORT))
-                time.sleep(2)
+	error = s.connect((HOST, PORT))
+
+	while error is OSError:
+		error = s.connect((HOST, PORT))
+		time.sleep(2)
 
 	GPIO.setmode(GPIO.BOARD)
 
@@ -30,6 +32,9 @@ try:
 
 	print("Calculating distance")
 
+	pulse_start_time = 0
+	pulse_end_time = 0
+
 	while True:
 		GPIO.output(PIN_TRIGGER, GPIO.HIGH)
 		time.sleep(0.00001)
@@ -40,17 +45,18 @@ try:
 		while GPIO.input(PIN_ECHO)==1:
 			pulse_end_time = time.time()
 
+		print(pulse_start_time, pulse_end_time)
 		pulse_duration = pulse_end_time - pulse_start_time
 		distance = round(pulse_duration * 17150, 2)
 		dist_bytes = str(distance).encode('utf-8')
 		print(str(distance))
 
-		time.sleep(0.5)
+		time.sleep(0.3)
 
-		#byte_data = get_dist()
 		s.sendall(dist_bytes)
 		data = s.recv(1024)
 		print('Received', repr(data))
 
 finally:
 	GPIO.cleanup()
+	print("done!")
