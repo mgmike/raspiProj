@@ -10,7 +10,6 @@ def get_ip(hostname):
 	return ip
 
 def get_ip_raspi():
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	hostname = socket.getfqdn()
 	(HOST, alias, iplist) = socket.gethostbyname_ex(hostname)
 	alias_str = ''.join([i for i in iplist])
@@ -23,6 +22,7 @@ print(HOST)
 #	HOST = socket.gethostbyname(socket.gethostname())
 #	print("Host ip: " + HOST)
 
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
 while True:
 	s.listen()
