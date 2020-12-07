@@ -4,12 +4,13 @@ import netifaces as ni
 import ifaddr
 from decimal import *
 
+threshold = 120
+delta = 20
+certanty = 0.0
+
 HOST = '192.168.50.220'  # Standard loopback interface address (localhost)
 PORT = 65432        # Port to listen on (non-privileged ports are > 1023)
 
-
-threshold = 120
-delta = 20
 
 def get_ip_ubuntu(hostname):
 	ip = ni.ifaddresses(hostname)[ni.AF_INET][0]['addr']
@@ -34,15 +35,14 @@ def get_ip_raspi():
 HOST = get_ip('wifi0')
 print(HOST)
 
-
 #except:
 #	HOST = socket.gethostbyname(socket.gethostname())
 #	print("Host ip: " + HOST)
 
-
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 s.bind((HOST, PORT))
-certanty = 0.0
+
+
 while True:
 	s.listen()
 	conn, addr = s.accept()
@@ -52,6 +52,7 @@ while True:
 			data = conn.recv(1024)
 			if not data:
 				break
+
 			data_s = data.decode("utf-8")
 			data_d = Decimal(data_s)
 			if data_d < threshold:
@@ -63,5 +64,6 @@ while True:
 			if certanty > 0.5:
 				print("Danger!")
 
+			#process_data(data)
 			conn.sendall(data)
 
