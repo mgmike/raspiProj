@@ -12,13 +12,13 @@ PIN_TRIGGER = 7
 PIN_ECHO = 11
 
 
-try:
-	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	error = s.connect((HOST, PORT))
+def send_ack(dist_bytes, s):
+	s.sendall(dist_bytes)
+	data = s.recv(1024)
+	print('Received', repr(data))
 
-	while error is OSError:
-		error = s.connect((HOST, PORT))
-		time.sleep(2)
+
+def read_sensor(s):
 
 	GPIO.setmode(GPIO.BOARD)
 
@@ -46,17 +46,24 @@ try:
 		while GPIO.input(PIN_ECHO)==1:
 			pulse_end_time = time.time()
 
-		print(pulse_start_time, pulse_end_time)
 		pulse_duration = pulse_end_time - pulse_start_time
 		distance = round(pulse_duration * 17150, 2)
 		dist_bytes = str(distance).encode('utf-8')
 		print(str(distance))
 
-		time.sleep(0.3)
+		time.sleep(0.1)
 
-		s.sendall(dist_bytes)
-		data = s.recv(1024)
-		print('Received', repr(data))
+		send_ack(dist_bytes, s)
+
+try:
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	error = s.connect((HOST, PORT))
+
+	while error is OSError:
+		error = s.connect((HOST, PORT))
+		time.sleep(1)
+
+	read_sensor(s)
 
 finally:
 	GPIO.cleanup()
