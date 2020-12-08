@@ -1,11 +1,11 @@
-8#!/usr/bin/python3
+#!/usr/bin/python3
 import RPi.GPIO as GPIO
 import time
 import socket
 import struct
 
 HOST = '192.168.50.220'
-HOST = '192.168.50.143'
+#HOST = '192.168.50.143'
 #HOST = '127.0.0.1'
 PORT = 65432
 PIN_TRIGGER = 7
@@ -17,6 +17,19 @@ def send_ack(dist_bytes, s):
 	data = s.recv(1024)
 	print('Received', repr(data))
 
+
+def process_data(data, certanty):
+	data_s = data.decode("utf-8")
+	data_d = Decimal(data_s)
+	if data_d < threshold:
+		if certanty < 1.0:
+			certanty += 1 / delta
+	else:
+		if certanty > 0.0:
+			certanty -= 1 / delta
+	if certanty > 0.5:
+		print("Danger!")
+	return certanty
 
 def read_sensor(s):
 
