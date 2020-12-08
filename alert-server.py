@@ -83,16 +83,19 @@ def read_sensor(q):
 
 
 def listen_for_clients(s,q):
+	s.listen()
 	while True:
-		s.listen()
 		conn, addr = s.accept()
-		with conn:
-			print('Connected by', addr)
-			while True:
-				data = q.get()
-				print(data)
-				conn.sendall(data)
-
+		try:
+			with conn:
+				print('Connected by', addr)
+				while True:
+					data = q.get()
+					print(data)
+					conn.sendall(data)
+		except:
+			conn.close()
+		print("Connection ended")
 
 HOST = get_ip('wlan0')
 print(HOST)
