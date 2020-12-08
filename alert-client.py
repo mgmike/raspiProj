@@ -11,6 +11,9 @@ PORT = 65432
 PIN_TRIGGER = 7
 PIN_ECHO = 11
 
+threshold = 120
+delta = 20
+certanty = 0.0
 
 def send_ack(dist_bytes, s):
 	s.sendall(dist_bytes)
@@ -77,6 +80,7 @@ try:
 		time.sleep(1)
 
 	read_sensor(s)
+	
 
 finally:
 	GPIO.cleanup()
