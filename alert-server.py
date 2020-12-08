@@ -32,6 +32,20 @@ def get_ip_raspi():
 	print(hostname + " ip, fqdn: " + HOST + ', ' + alias_str)
 
 
+def process_data(data, certanty):
+	data_s = data.decode("utf-8")
+	data_d = Decimal(data_s)
+	if data_d < threshold:
+		if certanty < 1.0:
+			certanty += 1 / delta
+	else:
+		if certanty > 0.0:
+			certanty -= 1/delta
+	if certanty > 0.5:
+		print("Danger!")
+	return certanty
+
+
 HOST = get_ip('wifi0')
 print(HOST)
 
@@ -53,17 +67,7 @@ while True:
 			if not data:
 				break
 
-			data_s = data.decode("utf-8")
-			data_d = Decimal(data_s)
-			if data_d < threshold:
-				if certanty < 1.0:
-					certanty += 1 / delta
-			else:
-				if certanty > 0.0:
-					certanty -= 1/delta
-			if certanty > 0.5:
-				print("Danger!")
 
-			#process_data(data)
+			certanty = process_data(data, certanty)
 			conn.sendall(data)
 
